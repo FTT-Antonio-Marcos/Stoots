@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Stoots{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="text-center mb-3">
+        <div class="logo"></div>
+        <h1 class="brand-name">STOOTS</h1>
+        <p class="tagline">Faça login para continuar</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} {{ 'alert-error' if category == 'error' else 'alert-success' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+            <label for="username" class="form-label">Usuário</label>
+            <input type="text" id="username" name="username" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" id="password" name="password" class="form-input" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full-width">Entrar</button>
+    </form>
+    
+    <div class="text-center mt-3">
+        <p class="text-secondary">Não tem uma conta? 
+            <a href="{{ url_for('register') }}" class="primary-blue no-underline">Registre-se</a>
+        </p>
+    </div>
+</div>
+{% endblock %} 

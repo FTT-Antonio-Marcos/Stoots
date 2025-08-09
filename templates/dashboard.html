@@ -1,0 +1,598 @@
+{% extends "base.html" %}
+{% extends "menu.html" %}
+{% block title %}Dashboard - Stoots{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="app-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="app-name">Stoots</div>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-name">{{ current_user.name }}</div>
+        </div>
+        
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+
+            
+            <div class="nav-item">
+                <i class="fas fa-bell"></i>
+                <span>Notificações</span>
+                <div class="nav-badge">3</div>
+            </div>
+            
+            <div class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </div>
+        </nav>
+        
+        <div class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+        </div>
+    </div>
+    
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-info">
+                <div class="points-display">
+                    <i class="fas fa-trophy"></i>
+                    <span>Pontos</span>
+                    <span>{{ current_user.points }}</span>
+                </div>
+                
+                <div class="investor-level">
+                    <i class="fas fa-user"></i>
+                    <span>Nível Investidor</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Conteúdo do Dashboard -->
+        <div class="dashboard-content">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="welcome-message">Bem-vindo de volta, {{ current_user.name }}! Comece a construir sua carteira financeira.</p>
+            
+            <!-- Cards de Métricas Financeiras -->
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Saldo Total da Carteira</span>
+                        <div class="card-icon purple">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">R$ {{ "%.0f"|format(total_balance) }}</div>
+                    <div class="card-description">
+                        {% if total_balance == 0 %}
+                            <span class="card-change">Comece adicionando investimentos</span>
+                        {% else %}
+                            <span class="card-change positive">+{{ "%.1f"|format(portfolio_return) }}% este mês</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Valor Aplicado</span>
+                        <div class="card-icon teal">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">R$ {{ "%.0f"|format(total_balance * 0.85) }}</div>
+                    <div class="card-description">
+                        {% if total_balance == 0 %}
+                            <span class="card-change">Nenhum investimento ainda</span>
+                        {% else %}
+                            <span class="card-change positive">+2.1% vs mês anterior</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Aporte do Mês</span>
+                        <div class="card-icon turquoise">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">R$ {{ "%.0f"|format(monthly_contribution) }}</div>
+                    <div class="card-description">
+                        {% if monthly_contribution == 0 %}
+                            <span class="card-change">Defina sua meta de aporte</span>
+                        {% else %}
+                            <span class="card-change">Meta: R$ 1.500</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Rentabilidade da Carteira</span>
+                        <div class="card-icon green">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">{{ "%.1f"|format(portfolio_return) }}%</div>
+                    <div class="card-description">
+                        {% if portfolio_return == 0 %}
+                            <span class="card-change">Aguardando investimentos</span>
+                        {% else %}
+                            <span class="card-change positive">+0.8% este mês</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seção de Ações Rápidas -->
+            <div class="quick-actions">
+                <h3 class="section-title">Ações Rápidas</h3>
+                <div class="actions-grid">
+                    <button class="action-btn" onclick="openCreatePortfolioModal()">
+                        <i class="fas fa-plus"></i>
+                        <span>Criar Carteira</span>
+                    </button>
+                    <button class="action-btn" onclick="openAddAssetModal()">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Adicionar Ativo</span>
+                    </button>
+                    <button class="action-btn" onclick="openAddGoalModal()">
+                        <i class="fas fa-bullseye"></i>
+                        <span>Definir Meta</span>
+                    </button>
+                    <button class="action-btn" onclick="openEducationModal()">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Começar Curso</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Gráfico de Pizza da Carteira -->
+            <div class="chart-container" id="chartContainer">
+                <div class="chart-header">
+                    <h3 class="chart-title">Distribuição da Carteira</h3>
+                    <div class="chart-filters">
+                        <button class="filter-btn active" data-filter="all">Todos</button>
+                        <button class="filter-btn" data-filter="fixed">Renda Fixa</button>
+                        <button class="filter-btn" data-filter="variable">Renda Variável</button>
+                        <button class="filter-btn" data-filter="international">Internacional</button>
+                    </div>
+                </div>
+                
+                <div class="pie-chart">
+                    <canvas id="portfolioChart" width="300" height="300"></canvas>
+                </div>
+                
+                <div class="chart-legend" id="chartLegend">
+                    <!-- Legendas serão adicionadas dinamicamente -->
+                </div>
+            </div>
+            
+            <!-- Estado Vazio -->
+            <div class="empty-state" id="emptyState" {% if total_balance > 0 %}style="display: none;"{% endif %}>
+                <i class="fas fa-chart-line"></i>
+                <h3>Comece sua jornada financeira!</h3>
+                <p>Adicione sua primeira carteira e ativos para começar a acompanhar seus investimentos.</p>
+                <div class="empty-actions">
+                    <button class="btn btn-primary" onclick="openCreatePortfolioModal()">
+                        <i class="fas fa-plus"></i>
+                        Criar Primeira Carteira
+                    </button>
+                    <button class="btn btn-secondary" onclick="openEducationModal()">
+                        <i class="fas fa-graduation-cap"></i>
+                        Aprender Sobre Investimentos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Criar Carteira -->
+<div class="modal" id="createPortfolioModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Criar Nova Carteira</h3>
+            <button class="modal-close" onclick="closeModal('createPortfolioModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="createPortfolioForm">
+                <div class="form-group">
+                    <label for="portfolioName">Nome da Carteira</label>
+                    <input type="text" id="portfolioName" name="name" required placeholder="Ex: Carteira Principal">
+                </div>
+                <div class="form-group">
+                    <label for="portfolioType">Tipo</label>
+                    <select id="portfolioType" name="type">
+                        <option value="pessoal">Pessoal</option>
+                        <option value="empresarial">Empresarial</option>
+                        <option value="familiar">Familiar</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('createPortfolioModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar Carteira</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar Ativo -->
+<div class="modal" id="addAssetModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Adicionar Ativo</h3>
+            <button class="modal-close" onclick="closeModal('addAssetModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="addAssetForm">
+                <div class="form-group">
+                    <label for="assetPortfolio">Carteira</label>
+                    <select id="assetPortfolio" name="portfolio_id" required>
+                        <option value="">Selecione uma carteira</option>
+                        {% for portfolio in portfolios %}
+                        <option value="{{ portfolio.id }}">{{ portfolio.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assetName">Nome do Ativo</label>
+                    <input type="text" id="assetName" name="name" required placeholder="Ex: PETR4, CDB Banco Inter">
+                </div>
+                <div class="form-group">
+                    <label for="assetType">Tipo</label>
+                    <select id="assetType" name="type" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="acao">Ação</option>
+                        <option value="fii">Fundos Imobiliários</option>
+                        <option value="cdb">CDB</option>
+                        <option value="tesouro">Tesouro Direto</option>
+                        <option value="fundo">Fundo de Investimento</option>
+                        <option value="cripto">Criptomoeda</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="assetQuantity">Quantidade</label>
+                        <input type="number" id="assetQuantity" name="quantity" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="assetPrice">Preço Unitário</label>
+                        <input type="number" id="assetPrice" name="unit_price" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addAssetModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar Ativo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar Meta -->
+<div class="modal" id="addGoalModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Definir Nova Meta</h3>
+            <button class="modal-close" onclick="closeModal('addGoalModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="addGoalForm">
+                <div class="form-group">
+                    <label for="goalName">Nome da Meta</label>
+                    <input type="text" id="goalName" name="name" required placeholder="Ex: Reserva de Emergência">
+                </div>
+                <div class="form-group">
+                    <label for="goalAmount">Valor Alvo</label>
+                    <input type="number" id="goalAmount" name="target_amount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="goalDeadline">Data Limite</label>
+                    <input type="date" id="goalDeadline" name="deadline" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addGoalModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar Meta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let portfolioChart = null;
+
+// Navegação do menu
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        if (this.classList.contains('coming-soon')) {
+            return; // Não permite navegação para itens "Em Breve"
+        }
+        
+        // Remove active de todos os itens
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        // Adiciona active ao item clicado
+        this.classList.add('active');
+        
+        // Navegação baseada no texto
+        const text = this.querySelector('span').textContent.toLowerCase();
+        const routes = {
+            'dashboard': '/dashboard',
+            'gastos': '/expenses',
+            'metas': '/goals',
+            'gamificação': '/gamification',
+            'educação': '/education',
+            'investimentos': '/investments',
+            'notificações': '/notifications',
+            'configurações': '/settings'
+        };
+        
+        if (routes[text]) {
+            window.location.href = routes[text];
+        }
+    });
+});
+
+// Logout
+document.querySelector('.logout-btn').addEventListener('click', function() {
+    window.location.href = "{{ url_for('logout') }}";
+});
+
+// Funções dos modais
+function openCreatePortfolioModal() {
+    document.getElementById('createPortfolioModal').style.display = 'flex';
+}
+
+function openAddAssetModal() {
+    document.getElementById('addAssetModal').style.display = 'flex';
+}
+
+function openAddGoalModal() {
+    document.getElementById('addGoalModal').style.display = 'flex';
+}
+
+function openEducationModal() {
+    window.location.href = "{{ url_for('education') }}";
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+}
+
+// Criar Carteira
+document.getElementById('createPortfolioForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        name: formData.get('name'),
+        type: formData.get('type')
+    };
+    
+    fetch('/api/create_portfolio', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeModal('createPortfolioModal');
+            this.reset();
+            location.reload(); // Recarrega para atualizar os dados
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+});
+
+// Adicionar Ativo
+document.getElementById('addAssetForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        portfolio_id: parseInt(formData.get('portfolio_id')),
+        name: formData.get('name'),
+        type: formData.get('type'),
+        quantity: parseFloat(formData.get('quantity')),
+        unit_price: parseFloat(formData.get('unit_price'))
+    };
+    
+    fetch('/api/add_asset', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeModal('addAssetModal');
+            this.reset();
+            location.reload(); // Recarrega para atualizar os dados
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+});
+
+// Adicionar Meta
+document.getElementById('addGoalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        name: formData.get('name'),
+        target_amount: parseFloat(formData.get('target_amount')),
+        deadline: formData.get('deadline')
+    };
+    
+    fetch('/api/add_goal', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeModal('addGoalModal');
+            this.reset();
+            location.reload(); // Recarrega para atualizar os dados
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+});
+
+// Carregar dados do portfolio e atualizar gráfico
+function loadPortfolioData() {
+    fetch('/api/get_portfolio_data')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.total_balance > 0) {
+            updateDashboard(data);
+            createPortfolioChart(data);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+}
+
+function updateDashboard(data) {
+    // Atualiza os cards com os dados reais
+    document.querySelector('.card-value').textContent = `R$ ${data.total_balance.toFixed(0)}`;
+    
+    // Mostra o gráfico e esconde o estado vazio
+    document.getElementById('chartContainer').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+}
+
+function createPortfolioChart(data) {
+    const ctx = document.getElementById('portfolioChart').getContext('2d');
+    
+    // Agrupa ativos por tipo
+    const assetTypes = {};
+    data.portfolios.forEach(portfolio => {
+        portfolio.assets.forEach(asset => {
+            if (!assetTypes[asset.type]) {
+                assetTypes[asset.type] = 0;
+            }
+            assetTypes[asset.type] += asset.total_value;
+        });
+    });
+    
+    const labels = Object.keys(assetTypes);
+    const values = Object.values(assetTypes);
+    const colors = ['#8b5cf6', '#14b8a6', '#06b6d4', '#f97316', '#10b981', '#ef4444'];
+    
+    if (portfolioChart) {
+        portfolioChart.destroy();
+    }
+    
+    portfolioChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors.slice(0, labels.length),
+                borderWidth: 0,
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(26, 26, 46, 0.9)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#94a3b8',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    displayColors: true
+                }
+            },
+            cutout: '60%'
+        }
+    });
+    
+    // Atualiza legendas
+    updateChartLegend(labels, values, colors);
+}
+
+function updateChartLegend(labels, values, colors) {
+    const legendContainer = document.getElementById('chartLegend');
+    const total = values.reduce((a, b) => a + b, 0);
+    
+    legendContainer.innerHTML = '';
+    
+    labels.forEach((label, index) => {
+        const percentage = ((values[index] / total) * 100).toFixed(1);
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.innerHTML = `
+            <div class="legend-color" style="background: ${colors[index]};"></div>
+            <div class="legend-text">${label} (${percentage}%)</div>
+        `;
+        legendContainer.appendChild(legendItem);
+    });
+}
+
+// Carrega dados ao iniciar
+document.addEventListener('DOMContentLoaded', function() {
+    loadPortfolioData();
+});
+
+// Filtros do gráfico
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // Remove active de todos os botões
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        // Adiciona active ao botão clicado
+        this.classList.add('active');
+        
+        const filter = this.getAttribute('data-filter');
+        // Aqui você pode implementar a lógica de filtro do gráfico
+        console.log('Filtro selecionado:', filter);
+    });
+});
+</script>
+{% endblock %} 

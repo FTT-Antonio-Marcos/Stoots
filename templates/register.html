@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Registro - Stoots{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="text-center mb-3">
+        <div class="logo"></div>
+        <h1 class="brand-name">STOOTS</h1>
+        <p class="tagline">Crie sua conta</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} {% if category == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('register') }}">
+        <div class="form-group">
+            <label for="name" class="form-label">Nome Completo</label>
+            <input type="text" id="name" name="name" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="username" class="form-label">Usuário</label>
+            <input type="text" id="username" name="username" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" id="email" name="email" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" id="password" name="password" class="form-input" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full-width">Criar Conta</button>
+    </form>
+    
+    <div class="text-center mt-3">
+        <p class="text-secondary">Já tem uma conta? 
+            <a href="{{ url_for('login') }}" class="primary-blue no-underline">Faça login</a>
+        </p>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% extends "menu.html" %}
+{% block title %}Notificações - Stoots{% endblock %}
+
+{% block content %}
+   
+    <div class="main-content">
+        <div class="header">
+            <div class="header-info">
+                <div class="points-display">
+                    <i class="fas fa-trophy"></i>
+                    <span>Pontos</span>
+                    <span>{{ current_user.points }}</span>
+                </div>
+                <div class="investor-level">
+                    <i class="fas fa-user"></i>
+                    <span>Nível Investidor</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <h1 class="page-title">Notificações</h1>
+            <p class="welcome-message">Mantenha-se informado sobre suas finanças</p>
+            
+            <div class="section">
+                <h3 class="section-title">Notificações Recentes</h3>
+                
+                <div class="activity-item">
+                    <div class="activity-icon red">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Meta próxima do prazo</div>
+                        <div class="activity-time">Reserva de Emergência vence em 5 dias</div>
+                    </div>
+                    <div class="activity-amount">Hoje</div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Investimento realizado</div>
+                        <div class="activity-time">R$ 500 aplicados em CDB</div>
+                    </div>
+                    <div class="activity-amount">Ontem</div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon blue">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Novo vídeo disponível</div>
+                        <div class="activity-time">"Como diversificar sua carteira"</div>
+                    </div>
+                    <div class="activity-amount">2 dias atrás</div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon orange">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Conquista desbloqueada</div>
+                        <div class="activity-time">"Primeiro Investimento" +100 pontos</div>
+                    </div>
+                    <div class="activity-amount">3 dias atrás</div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon green">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Carteira atualizada</div>
+                        <div class="activity-time">Valor total: R$ 3.450 (+2.1%)</div>
+                    </div>
+                    <div class="activity-amount">1 semana atrás</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+        
+        const text = this.querySelector('span').textContent.toLowerCase();
+        const routes = {
+            'dashboard': '/dashboard',
+            'gastos': '/expenses',
+            'metas': '/goals',
+            'gamificação': '/gamification',
+            'educação': '/education',
+            'investimentos': '/investments',
+            'notificações': '/notifications',
+            'configurações': '/settings'
+        };
+        
+        if (routes[text]) {
+            window.location.href = routes[text];
+        }
+    });
+});
+
+document.querySelector('.logout-btn').addEventListener('click', function() {
+    window.location.href = "{{ url_for('logout') }}";
+});
+</script>
+{% endblock %} 

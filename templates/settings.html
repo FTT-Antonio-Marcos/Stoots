@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Configurações - Stoots{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="app-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="app-name">Stoots</div>
+        </div>
+        <div class="user-info">
+            <div class="user-name">{{ current_user.name }}</div>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></div>
+            <div class="nav-item"><i class="fas fa-file-invoice"></i><span>Gastos</span></div>
+            <div class="nav-item"><i class="fas fa-bullseye"></i><span>Metas</span></div>
+            <div class="nav-item"><i class="fas fa-gamepad"></i><span>Gamificação</span></div>
+            <div class="nav-item"><i class="fas fa-graduation-cap"></i><span>Educação</span></div>
+            <div class="nav-item"><i class="fas fa-chart-line"></i><span>Investimentos</span></div>
+            <div class="nav-item"><i class="fas fa-bell"></i><span>Notificações</span><div class="nav-badge">3</div></div>
+            <div class="nav-item active"><i class="fas fa-cog"></i><span>Configurações</span></div>
+        </nav>
+        <div class="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Sair</span></div>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <div class="header-info">
+                <div class="points-display">
+                    <i class="fas fa-trophy"></i>
+                    <span>Pontos</span>
+                    <span>{{ current_user.points }}</span>
+                </div>
+                <div class="investor-level">
+                    <i class="fas fa-user"></i>
+                    <span>Nível Investidor</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <h1 class="page-title">Configurações</h1>
+            <p class="welcome-message">Gerencie suas preferências e conta</p>
+            
+            <div class="sections-grid">
+                <div class="section">
+                    <h3 class="section-title">Perfil</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" class="form-input" value="{{ current_user.name }}" title="Nome Completo" placeholder="Digite seu nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" class="form-input" value="{{ current_user.email }}" title="E-mail" placeholder="Digite seu e-mail">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Usuário</label>
+                        <input type="text" class="form-input" value="{{ current_user.username }}" readonly title="Usuário" placeholder="Seu nome de usuário">
+                    </div>
+                    
+                    <button class="btn btn-primary">Salvar Alterações</button>
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Preferências</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Moeda Principal</label>
+                        <select class="form-input" title="Moeda Principal">
+                            <option value="BRL" selected>Real (R$)</option>
+                            <option value="USD">Dólar ($)</option>
+                            <option value="EUR">Euro (€)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fuso Horário</label>
+                        <select class="form-input" title="Fuso Horário">
+                            <option value="America/Sao_Paulo" selected>Brasília (GMT-3)</option>
+                            <option value="America/New_York">Nova York (GMT-5)</option>
+                            <option value="Europe/London">Londres (GMT+0)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notificações</label>
+                        <div class="notification-options">
+                            <label class="notification-label">
+                                <input type="checkbox" checked class="notification-checkbox">
+                                Alertas de mercado
+                            </label>
+                            <label class="notification-label">
+                                <input type="checkbox" checked class="notification-checkbox">
+                                Lembretes de metas
+                            </label>
+                            <label class="notification-label">
+                                <input type="checkbox" checked class="notification-checkbox">
+                                Novos vídeos
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary">Salvar Preferências</button>
+                </div>
+            </div>
+            
+            <div class="section section-margin-top">
+                <h3 class="section-title">Segurança</h3>
+                
+                <div class="activity-item">
+                    <div class="activity-icon blue">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Autenticação em dois fatores</div>
+                        <div class="activity-time">Recomendado para maior segurança</div>
+                    </div>
+                    <div class="activity-amount">
+                        <button class="btn btn-secondary btn-small">Ativar</button>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon orange">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Alterar senha</div>
+                        <div class="activity-time">Última alteração há 30 dias</div>
+                    </div>
+                    <div class="activity-amount">
+                        <button class="btn btn-secondary btn-change-password">Alterar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+        
+        const text = this.querySelector('span').textContent.toLowerCase();
+        const routes = {
+            'dashboard': '/dashboard',
+            'gastos': '/expenses',
+            'metas': '/goals',
+            'gamificação': '/gamification',
+            'educação': '/education',
+            'investimentos': '/investments',
+            'notificações': '/notifications',
+            'configurações': '/settings'
+        };
+        
+        if (routes[text]) {
+            window.location.href = routes[text];
+        }
+    });
+});
+
+document.querySelector('.logout-btn').addEventListener('click', function() {
+    window.location.href = "{{ url_for('logout') }}";
+});
+</script>
+{% endblock %} 
